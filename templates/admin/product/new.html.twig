@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau produit{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Ajouter un nouveau produit</h2>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_row(form.name) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.color) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.price) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.category) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.supplier) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.season) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.sizes) }}
+        </div>
+        <button type="submit" class="btn btn-primary">Créer le produit</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
