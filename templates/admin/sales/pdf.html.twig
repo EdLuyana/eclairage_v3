@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+        h1 { text-align: center; font-size: 18px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #999; padding: 4px 6px; text-align: center; }
+        th { background-color: #eee; }
+    </style>
+</head>
+<body>
+<h1>Journal des ventes<br><small>du {{ start|date('d/m/Y') }} au {{ end|date('d/m/Y') }}</small></h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Référence</th>
+        <th>Taille</th>
+        <th>Qté</th>
+        <th>Prix unitaire</th>
+        <th>Montant</th>
+        <th>Magasin</th>
+        <th>Vendeuse</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% set total = 0 %}
+    {% for m in movements %}
+        {% set montant = m.quantity * m.price %}
+        {% set total = total + montant %}
+        <tr>
+            <td>{{ m.createdAt|date('d/m/Y H:i') }}</td>
+            <td>{{ m.product.reference }}</td>
+            <td>{{ m.size }}</td>
+            <td>{{ m.quantity }}</td>
+            <td>{{ m.price|number_format(2, '.', ' ') }} €</td>
+            <td>{{ montant|number_format(2, '.', ' ') }} €</td>
+            <td>{{ m.location.name }}</td>
+            <td>{{ m.user.username }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<p style="text-align: right; font-weight: bold; margin-top: 20px;">
+    Total CA : {{ total|number_format(2, '.', ' ') }} €
+</p>
+</body>
+</html>

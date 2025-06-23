@@ -3,40 +3,86 @@
 {% block title %}Dashboard Admin{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Tableau de bord administrateur</h1>
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-primary mb-4">← Retour au tableau de bord</a>
+    {% elseif is_granted('ROLE_USER') %}
+        <a href="{{ path('user_dashboard') }}" class="btn btn-outline-primary mb-4">← Retour au tableau de bord</a>
+    {% endif %}
 
-        <div class="row g-4">
-            <div class="col-md-4">
-                <a href="#" class="btn btn-outline-primary w-100 p-4">
-                    Réassort
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="#" class="btn btn-outline-primary w-100 p-4">
-                    Consultation de stock
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="#" class="btn btn-outline-primary w-100 p-4">
-                    Comptes vendeuses
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="#" class="btn btn-outline-primary w-100 p-4">
-                    Génération d’étiquettes
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="#" class="btn btn-outline-primary w-100 p-4">
-                    Importation CSV
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="#" class="btn btn-outline-primary w-100 p-4">
-                    Journal des ventes / mouvements
-                </a>
-            </div>
+    <h1 class="mb-4">Tableau de bord Administrateur</h1>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_product_create') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-3 h-100 border border-primary">
+                    <h5 class="card-title mb-0">➕ Création produit & éléments liés</h5>
+                    <p class="text-muted">Créer un produit ou un fournisseur, une catégorie ou une collection</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_reassort_start') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-3 h-100">
+                    <h5 class="card-title mb-0">📦 Réassort</h5>
+                    <p class="text-muted">Répartir des produits par taille et magasin</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_stock_index') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-3 h-100">
+                    <h5 class="card-title mb-0">📊 Stock global</h5>
+                    <p class="text-muted">Voir les stocks par produit, taille et magasin</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_labels_index') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-3 h-100">
+                    <h5 class="card-title mb-0">🏷️ Étiquettes</h5>
+                    <p class="text-muted">Imprimer les étiquettes code-barres pour les produits</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_price_edit') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-3 h-100">
+                    <h5 class="card-title mb-0">💰 Mise à jour des prix</h5>
+                    <p class="text-muted">Modifier les prix par référence, catégorie, collection ou fournisseur</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_user_index') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-3 h-100">
+                    <h5 class="card-title mb-0">👤 Vendeuses</h5>
+                    <p class="text-muted">Créer ou archiver des comptes vendeuses</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_sales_index') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-3 h-100">
+                    <h5 class="card-title mb-0">📈 Journal des ventes</h5>
+                    <p class="text-muted">Suivi des ventes par période, vendeuse ou magasin</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_activity_log') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-3 h-100">
+                    <h5 class="card-title mb-0">🛠️ Journal d’activités</h5>
+                    <p class="text-muted">Ajouts, retours, réassorts hors ventes</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_import_csv') }}" class="text-decoration-none">
+                <div class="card shadow-sm p-3 h-100">
+                    <h5 class="card-title mb-0">📁 Import CSV</h5>
+                    <p class="text-muted">Importer des produits en masse</p>
+                </div>
+            </a>
         </div>
     </div>
 {% endblock %}

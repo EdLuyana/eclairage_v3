@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Répartition des produits{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">📦 Répartir les tailles du produit</h1>
+
+    <div class="card p-4 shadow-sm mb-4">
+        <h5 class="mb-3">Produit : {{ product.name }} ({{ product.reference }})</h5>
+
+        <form method="post" action="{{ path('admin_reassort_confirm') }}">
+            <input type="hidden" name="reference" value="{{ product.reference }}">
+
+            {% for size, qty in sizes %}
+                {% set qty = qty|default(0)|int %}
+                {% if qty > 0 %}
+                    <div class="mb-4 border rounded p-3">
+                        <h6 class="mb-3">Taille {{ size }} — Quantité à répartir : <strong>{{ qty }}</strong></h6>
+                        <div class="row g-2">
+                            {% for location in locations %}
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">{{ location.name }}</label>
+                                    <input type="number"
+                                           name="distributions[{{ size }}][{{ location.id }}]"
+                                           class="form-control"
+                                           min="0"
+                                           value="0"
+                                           max="{{ qty }}">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <button class="btn btn-success mt-3">✅ Valider le réassort</button>
+        </form>
+    </div>
+{% endblock %}

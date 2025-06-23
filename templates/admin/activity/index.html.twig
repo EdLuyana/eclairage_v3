@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Journal d'activités{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">📘 Journal d'activités</h1>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label for="period" class="form-label">Période</label>
+            <select name="period" id="period" class="form-select">
+                <option value="24h" {{ period == '24h' ? 'selected' }}>Dernières 24h</option>
+                <option value="1w" {{ period == '1w' ? 'selected' }}>1 semaine</option>
+                <option value="1m" {{ period == '1m' ? 'selected' }}>1 mois</option>
+                <option value="month" {{ period == 'month' ? 'selected' }}>Mois en cours</option>
+                <option value="year" {{ period == 'year' ? 'selected' }}>Année en cours</option>
+                <option value="all" {{ period == 'all' ? 'selected' }}>Depuis le début</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="location" class="form-label">Magasin</label>
+            <select name="location" id="location" class="form-select">
+                <option value="">Tous les magasins</option>
+                {% for loc in locations %}
+                    <option value="{{ loc.id }}" {{ locationId == loc.id ? 'selected' }}>
+                        {{ loc.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="user" class="form-label">Vendeuse</label>
+            <select name="user" id="user" class="form-select">
+                <option value="">Toutes les vendeuses</option>
+                {% for u in users %}
+                    <option value="{{ u.id }}" {{ userId == u.id ? 'selected' }}>
+                        {{ u.username }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3 align-self-end">
+            <button class="btn btn-primary w-100">🔎 Filtrer</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-light">
+        <tr>
+            <th>Date</th>
+            <th>Action</th>
+            <th>Produit</th>
+            <th>Taille</th>
+            <th>Quantité</th>
+            <th>Prix unitaire</th>
+            <th>Magasin</th>
+            <th>Vendeuse</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for movement in movements %}
+            <tr>
+                <td>{{ movement.createdAt|date('d/m/Y H:i') }}</td>
+                <td>
+                    {% if movement.type == 'add' %}➕ Ajout{% elseif movement.type == 'return' %}↩️ Retour client{% else %}🔄 Autre{% endif %}
+                </td>
+                <td>{{ movement.product.reference }}</td>
+                <td>{{ movement.size }}</td>
+                <td>{{ movement.quantity }}</td>
+                <td>{{ movement.price|number_format(2, '.', ' ') }} €</td>
+                <td>{{ movement.location.name }}</td>
+                <td>{{ movement.user.username }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8" class="text-center text-muted">Aucune activité enregistrée pour cette sélection.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

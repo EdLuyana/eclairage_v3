@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Création produit & éléments liés{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">Créer un produit ou un élément lié</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4 mb-4">
+                <h5 class="mb-3">🧾 Formulaire produit</h5>
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <button class="btn btn-primary mt-3">Enregistrer le produit</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4 mb-4">
+                <h5 class="mb-3">➕ Ajouter un élément lié</h5>
+                <select id="linked-form-selector" class="form-select mb-3">
+                    <option value="">Sélectionner un élément à ajouter</option>
+                    <option value="supplier">Fournisseur</option>
+                    <option value="category">Catégorie</option>
+                    <option value="season">Collection</option>
+                </select>
+
+                <div id="linked-form-container">
+                    <!-- Les formulaires dynamiques s'afficheront ici -->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+{% endblock %}

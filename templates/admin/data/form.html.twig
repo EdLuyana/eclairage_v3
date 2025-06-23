@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un {{ label|lower }}{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">Ajouter un {{ label }}</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <div class="card p-4 shadow-sm">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-success mt-3">Ajouter</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

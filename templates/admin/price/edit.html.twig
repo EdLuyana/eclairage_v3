@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier les prix{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">💸 Mise à jour des prix</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {{ form_start(form) }}
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            {{ form_row(form.filterType) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.filterValue) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.newPrice) }}
+        </div>
+    </div>
+
+    <button class="btn btn-primary">💾 Appliquer le nouveau prix</button>
+    {{ form_end(form) }}
+
+    {% if updatedCount is not null %}
+        <div class="mt-4 alert alert-info">
+            ✅ {{ updatedCount }} produit(s) mis à jour avec succès.
+        </div>
+    {% endif %}
+{% endblock %}

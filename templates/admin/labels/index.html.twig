@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Étiquettes à imprimer{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        @media print {
+            body {
+                margin: 0;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        .label-sheet {
+            display: grid;
+            grid-template-columns: repeat(4, 25%);
+            grid-auto-rows: 21.2mm;
+            gap: 0;
+            width: 210mm;
+            padding: 5mm;
+            font-size: 8px;
+        }
+
+        .label {
+            border: 1px dashed #ccc;
+            padding: 2mm 3mm;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .label .ref {
+            font-size: 7px;
+        }
+
+        .label .barcode {
+            margin: 2px 0;
+            font-family: monospace;
+            font-size: 10px;
+        }
+
+        .label .size {
+            font-size: 9px;
+            margin-top: 2px;
+        }
+
+        .label .price {
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .label.magasin {
+            font-size: 12px;
+            font-weight: bold;
+            background: #f5f5f5;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">🖨️ Étiquettes produits à imprimer</h1>
+
+    <div class="no-print mb-4">
+        <button onclick="window.print()" class="btn btn-primary">
+            🖨 Imprimer les étiquettes
+        </button>
+    </div>
+
+    <div class="label-sheet">
+        {% for locationName, refs in groupedLines %}
+            <div class="label magasin">📍 MAGASIN {{ locationName|upper }}</div>
+
+            {% for reference, tailles in refs|sort %}
+                {% for size in sizeOrder %}
+                    {% if tailles[size] is defined %}
+                        {% for line in tailles[size] %}
+                            {% for i in 1..line.quantity %}
+                                <div class="label">
+                                    <div class="ref">{{ line.product.reference }}</div>
+                                    <div class="barcode">||| ||| |||</div>
+                                    <div class="size">{{ line.size }}</div>
+                                    <div class="price">{{ line.product.price|number_format(2, '.', ' ') }} €</div>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock %}

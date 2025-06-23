@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\StockMovementRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Stock;
+use App\Entity\Product;
 
 #[ORM\Entity(repositoryClass: StockMovementRepository::class)]
 class StockMovement
@@ -16,6 +18,10 @@ class StockMovement
     #[ORM\ManyToOne(inversedBy: 'movements')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Stock $stock = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
 
     #[ORM\Column]
     private int $quantity;
@@ -47,6 +53,17 @@ class StockMovement
     public function setStock(Stock $stock): static
     {
         $this->stock = $stock;
+        return $this;
+    }
+
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(Product $product): static
+    {
+        $this->product = $product;
         return $this;
     }
 
@@ -85,6 +102,19 @@ class StockMovement
     public function setSource(?string $source): static
     {
         $this->source = $source;
+        return $this;
+    }
+    #[ORM\ManyToOne]
+    private ?User $user = null;
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 }

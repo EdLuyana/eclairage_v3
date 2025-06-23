@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Importation de produits{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">📁 Importer des produits en masse</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    {% if errors is not empty %}
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {{ form_start(form, { attr: { enctype: 'multipart/form-data' } }) }}
+    <div class="mb-3">
+        {{ form_row(form.csvFile) }}
+    </div>
+    <button class="btn btn-primary">📤 Importer</button>
+    {{ form_end(form) }}
+
+    <hr class="my-4">
+    <p class="text-muted small">
+        Le fichier CSV doit être au format :<br>
+        <code>Nom;Couleur;Référence;Prix;Taille;Catégorie;Fournisseur;Saison</code><br>
+        Une ligne par produit (référence + taille).
+    </p>
+{% endblock %}

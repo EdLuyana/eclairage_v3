@@ -49,16 +49,17 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $user = $token->getUser();
+        $roles = (array) $user->getRoles();
 
-        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+        if (in_array('ROLE_ADMIN', $roles)) {
             return new RedirectResponse($this->router->generate('admin_dashboard'));
         }
 
-        if (in_array('ROLE_USER', $user->getRoles())) {
-            return new RedirectResponse($this->router->generate('user_dashboard'));
+        if (in_array('ROLE_USER', $roles)) {
+            return new RedirectResponse($this->router->generate('user_select_location'));
         }
 
-        return new RedirectResponse($this->router->generate('app_login'));
+        return new RedirectResponse($this->router->generate(self::LOGIN_ROUTE));
     }
 
     public function getLoginUrl(Request $request): string
@@ -70,6 +71,4 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
     {
         return new RedirectResponse($this->router->generate(self::LOGIN_ROUTE));
     }
-
-
 }

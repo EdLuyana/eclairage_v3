@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des vendeuses{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">👥 Gestion des comptes vendeuses</h1>
+
+    <a href="{{ path('admin_user_new') }}" class="btn btn-success mb-4">➕ Créer un compte vendeuse</a>
+
+    <h2 class="h5 text-primary mt-4">Comptes actifs</h2>
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr>
+            <th>Nom d'utilisateur</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in activeUsers %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>
+                    <a href="{{ path('admin_user_password', {id: user.id}) }}" class="btn btn-sm btn-outline-primary">🔑 Modifier mot de passe</a>
+                    <a href="{{ path('admin_user_archive', {id: user.id}) }}" class="btn btn-sm btn-outline-danger">🗃 Archiver</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="2" class="text-muted text-center">Aucune vendeuse active.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="h5 text-secondary mt-5">Comptes archivés</h2>
+    <table class="table table-bordered table-sm">
+        <thead>
+        <tr>
+            <th>Nom d'utilisateur</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in archivedUsers %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>
+                    <a href="{{ path('admin_user_unarchive', {id: user.id}) }}" class="btn btn-sm btn-outline-success">♻ Réactiver</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="2" class="text-muted text-center">Aucun compte archivé.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

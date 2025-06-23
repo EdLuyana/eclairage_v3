@@ -1,0 +1,18 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h2>Liste des produits</h2>
+        <a href="{{ path('admin_product_new') }}" class="btn btn-primary mb-3">Ajouter un produit</a>
+        <ul>
+            {% for product in products %}
+                <li>{{ product.name }} - {{ product.reference }}</li>
+            {% else %}
+                <li>Aucun produit</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
