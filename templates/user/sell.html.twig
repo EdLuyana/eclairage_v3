@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vente{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+
+        <h2 class="text-center mb-4">Vente</h2>
+
+        {# Message de succès #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        {# Scan / saisie de la référence #}
+        <form method="get" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="reference" value="{{ reference }}" class="form-control form-control-lg" placeholder="Scanner ou saisir la référence produit" required>
+                <button class="btn btn-primary btn-lg" type="submit">Valider</button>
+            </div>
+        </form>
+
+        {# Affichage produit et tailles dispo #}
+        {% if product %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>{{ product.name }}</h4>
+                    <p>Couleur : {{ product.color }} | Prix : {{ product.price }} €</p>
+
+                    <form method="post">
+                        <input type="hidden" name="reference" value="{{ product.reference }}">
+                        <input type="hidden" name="price" value="{{ product.price }}">
+                        <input type="hidden" name="action" value="add_to_cart">
+
+                        <label class="form-label">Sélectionnez une taille disponible :</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for size in sizes %}
+                                <button type="submit" name="size" value="{{ size }}" class="btn btn-outline-secondary">
+                                    {{ size }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Panier actuel #}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Panier</strong>
+                {% if discountApplied %}
+                    <span class="badge bg-success">Réduction appliquée (10%)</span>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                {% if cart is empty %}
+                    <p class="text-center my-3">Aucun article pour le moment</p>
+                {% else %}
+                    <table class="table table-striped m-0">
+                        <thead>
+                        <tr>
+                            <th>Référence</th>
+                            <th>Taille</th>
+                            <th>Prix (€)</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% set total = 0 %}
+                        {% for item in cart %}
+                            <tr>
+                                <td>{{ item.reference }}</td>
+                                <td>{{ item.size }}</td>
+                                <td>{{ item.price|number_format(2, '.', ' ') }}</td>
+                                <td class="text-end">
+                                    <a href="{{ path('user_sell', {'remove': loop.index0}) }}" class="btn btn-sm btn-outline-danger" title="Retirer l'article">✖</a>
+                                </td>
+                            </tr>
+                            {% set total = total + item.price %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="p-3">
+                        <p class="mb-1"><strong>Total : </strong>{{ total|number_format(2, '.', ' ') }} €</p>
+
+                        {% if discountApplied %}
+                            {% set discountedTotal = total * 0.9 %}
+                            <p class="mb-1 text-success"><strong>Total avec réduction :</strong> {{ discountedTotal|number_format(2, '.', ' ') }} €</p>
+                            <a href="{{ path('user_sell', {'discount': 0}) }}" class="btn btn-sm btn-outline-danger">Retirer la réduction</a>
+                        {% else %}
+                            <a href="{{ path('user_sell', {'discount': 1}) }}" class="btn btn-sm btn-outline-success">Appliquer réduction 10%</a>
+                        {% endif %}
+
+                        <a href="{{ path('user_sell', {'clear': 1}) }}" class="btn btn-sm btn-outline-danger mt-2">🗑️ Vider le panier</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Validation finale #}
+        {% if cart is not empty %}
+            <form method="post">
+                <input type="hidden" name="action" value="validate_sale">
+                <button type="submit" class="btn btn-success btn-lg w-100">Valider la vente</button>
+            </form>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{{ path('user_dashboard') }}" class="btn btn-link">⬅ Retour au tableau de bord</a>
+        </div>
+    </div>
+{% endblock %}

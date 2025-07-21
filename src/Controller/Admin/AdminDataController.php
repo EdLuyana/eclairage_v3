@@ -33,7 +33,6 @@ class AdminDataController extends AbstractController
 
         [$entityClass, $formClass, $label] = $map[$type];
         $entity = new $entityClass();
-        /** @var FormInterface $form */
         $form = $this->createForm($formClass, $entity);
         $form->handleRequest($request);
 
@@ -42,13 +41,13 @@ class AdminDataController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', "$label ajouté avec succès.");
-            return $this->redirectToRoute('admin_data_manage', ['type' => $type]);
+            return $this->redirectToRoute('admin_product_create');
         }
 
-        return $this->render('admin/data/form.html.twig', [
+        return $this->render('admin/data/_form_fragment.html.twig', [
             'form' => $form->createView(),
+            'label' => $label,
             'type' => $type,
-            'label' => $label
         ]);
     }
 }

@@ -52,10 +52,7 @@
         <tr>
             <th>Date</th>
             <th>Action</th>
-            <th>Produit</th>
-            <th>Taille</th>
-            <th>Quantité</th>
-            <th>Prix unitaire</th>
+            <th>Référence</th>
             <th>Magasin</th>
             <th>Vendeuse</th>
         </tr>
@@ -68,9 +65,6 @@
                     {% if movement.type == 'add' %}➕ Ajout{% elseif movement.type == 'return' %}↩️ Retour client{% else %}🔄 Autre{% endif %}
                 </td>
                 <td>{{ movement.product.reference }}</td>
-                <td>{{ movement.size }}</td>
-                <td>{{ movement.quantity }}</td>
-                <td>{{ movement.price|number_format(2, '.', ' ') }} €</td>
                 <td>{{ movement.location.name }}</td>
                 <td>{{ movement.user.username }}</td>
             </tr>

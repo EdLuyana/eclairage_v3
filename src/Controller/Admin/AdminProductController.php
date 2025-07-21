@@ -20,10 +20,16 @@ class AdminProductController extends AbstractController
         $form = $this->createForm(ProductForm::class, $product);
         $form->handleRequest($request);
 
-        // Référence auto à ajouter ici plus tard
-
         if ($form->isSubmitted() && $form->isValid()) {
-            // La logique de génération de la référence produit sera ici plus tard
+            // 🔥 Génération automatique de la référence produit
+            $supplier = strtoupper(substr($product->getSupplier()?->getName() ?? 'XXXXXX', 0, 6));
+            $season   = str_replace(' ', '', $product->getSeason()?->getName() ?? 'SANSCO');
+            $name     = str_replace(' ', '_', substr($product->getName(), 0, 25));
+            $color    = str_replace(' ', '_', $product->getColor() ?? 'NC');
+
+            $reference = "{$supplier}_{$season}_{$name}_{$color}";
+            $product->setReference($reference);
+
             $em->persist($product);
             $em->flush();
 

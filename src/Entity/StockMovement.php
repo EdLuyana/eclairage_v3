@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Repository\StockMovementRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Stock;
-use App\Entity\Product;
 
 #[ORM\Entity(repositoryClass: StockMovementRepository::class)]
 class StockMovement
@@ -23,6 +21,13 @@ class StockMovement
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
+    #[ORM\Column(length: 10)]
+    private string $size;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Location $location = null;
+
     #[ORM\Column]
     private int $quantity;
 
@@ -33,7 +38,10 @@ class StockMovement
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $source = null; // nom de l’utilisateur ou vendeur concerné
+    private ?string $source = null;
+
+    #[ORM\ManyToOne]
+    private ?User $user = null;
 
     public function __construct()
     {
@@ -64,6 +72,28 @@ class StockMovement
     public function setProduct(Product $product): static
     {
         $this->product = $product;
+        return $this;
+    }
+
+    public function getSize(): string
+    {
+        return $this->size;
+    }
+
+    public function setSize(string $size): static
+    {
+        $this->size = $size;
+        return $this;
+    }
+
+    public function getLocation(): ?Location
+    {
+        return $this->location;
+    }
+
+    public function setLocation(Location $location): static
+    {
+        $this->location = $location;
         return $this;
     }
 
@@ -104,8 +134,6 @@ class StockMovement
         $this->source = $source;
         return $this;
     }
-    #[ORM\ManyToOne]
-    private ?User $user = null;
 
     public function getUser(): ?User
     {

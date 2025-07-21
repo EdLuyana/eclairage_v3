@@ -30,10 +30,15 @@
     <small>&copy; {{ "now"|date("Y") }} Eclairage - Tous droits réservés</small>
 </footer>
 
-{# Bootstrap JS + Optionnel: JS centralisé #}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ asset('assets/js/app.js') }}"></script>
 
-{% block javascripts %}{% endblock %}
+
+{% block javascripts %}
+    {# Bootstrap JS + Optionnel: JS centralisé #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.baseUrl = "{{ path('admin_data_manage', {'type': 'supplier'}) | replace({'/supplier': ''}) }}";
+    </script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+{% endblock %}
 </body>
 </html>

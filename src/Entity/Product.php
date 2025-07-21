@@ -45,7 +45,7 @@ class Product
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Stock::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $stocks;
 
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductSize::class, orphanRemoval: true, cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Size::class)]
     private Collection $sizes;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: ReassortLine::class, orphanRemoval: true)]
@@ -145,20 +145,17 @@ class Product
 
     public function getSizes(): Collection { return $this->sizes; }
 
-    public function addSize(ProductSize $size): static
+    public function addSize(Size $size): static
     {
         if (!$this->sizes->contains($size)) {
             $this->sizes->add($size);
-            $size->setProduct($this);
         }
         return $this;
     }
 
-    public function removeSize(ProductSize $size): static
+    public function removeSize(Size $size): static
     {
-        if ($this->sizes->removeElement($size) && $size->getProduct() === $this) {
-            $size->setProduct(null);
-        }
+        $this->sizes->removeElement($size);
         return $this;
     }
 

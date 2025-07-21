@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Consultation du stock{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h2 class="text-center mb-4">Consulter le stock</h2>
+
+        {# Formulaire de scan/saisie #}
+        <form method="get" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="reference" value="{{ reference }}" class="form-control form-control-lg" placeholder="Scanner ou saisir la référence" required>
+                <button class="btn btn-primary btn-lg" type="submit">Rechercher</button>
+            </div>
+        </form>
+
+        {% if product %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="mb-1">{{ product.name }}</h4>
+                    <p class="mb-0">Référence : {{ product.reference }} | Couleur : {{ product.color }}</p>
+                </div>
+            </div>
+
+            {% if sizes is not empty and stockMap is not empty %}
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead>
+                        <tr>
+                            <th>Taille</th>
+                            {% for locationName, _ in stockMap %}
+                                {% set missingCount = 0 %}
+                                {% for size in sizes %}
+                                    {% if stockMap[locationName][size]|default(0) < 1 %}
+                                        {% set missingCount = missingCount + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if missingCount == 0 %}
+                                    {% set color = 'success' %}
+                                {% elseif missingCount == 1 %}
+                                    {% set color = 'warning' %}
+                                {% else %}
+                                    {% set color = 'danger' %}
+                                {% endif %}
+
+                                <th class="bg-{{ color }}">{{ locationName }}</th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for size in sizes %}
+                            <tr>
+                                <th>{{ size }}</th>
+                                {% for locationName, stocks in stockMap %}
+                                    <td>
+                                        {{ stocks[size]|default(0) }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">Aucune information de stock trouvée pour ce produit.</div>
+            {% endif %}
+        {% elseif reference %}
+            <div class="alert alert-danger">Référence introuvable.</div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{{ path('user_dashboard') }}" class="btn btn-link">⬅ Retour au tableau de bord</a>
+        </div>
+    </div>
+{% endblock %}

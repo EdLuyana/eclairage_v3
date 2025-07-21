@@ -1,0 +1,26 @@
+{# templates/user/dashboard.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <h2 class="text-center mb-4">Bienvenue {{ app.user.username }}</h2>
+
+        <div class="row justify-content-center text-center">
+            <div class="col-12 col-md-4 mb-4">
+                <a href="{{ path('user_sell') }}" class="btn btn-lg btn-primary w-100 py-4">Vente</a>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+                <a href="{{ path('user_check_stock') }}" class="btn btn-lg btn-warning w-100 py-4">Consulter le stock</a>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+                <a href="{{ path('user_add_stock') }}" class="btn btn-lg btn-success w-100 py-4">Ajouter du stock</a>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ path('user_change_location') }}" class="text-muted small">Changer de magasin</a>
+        </div>
+    </div>
+{% endblock %}

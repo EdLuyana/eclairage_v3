@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sélection du magasin{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h2 class="text-center mb-4">Sélectionnez votre magasin</h2>
+
+        {% for message in app.flashes('danger') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
+        <form method="post" class="text-center">
+            <div class="mb-3">
+                <select name="location" class="form-select form-select-lg" required>
+                    <option value="">-- Choisissez un magasin --</option>
+                    {% for location in locations %}
+                        <option value="{{ location.id }}">{{ location.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">Valider</button>
+        </form>
+    </div>
+{% endblock %}

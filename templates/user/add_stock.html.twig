@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajout de stock{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h2 class="text-center mb-4">Ajouter un produit au stock</h2>
+
+        {# Message flash de confirmation #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        {# Formulaire de saisie / scan de la référence produit #}
+        <form method="get" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="reference" value="{{ reference }}" class="form-control form-control-lg" placeholder="Scanner ou saisir la référence produit" required>
+                <button class="btn btn-primary btn-lg" type="submit">Rechercher</button>
+            </div>
+        </form>
+
+        {# Affichage du produit et des tailles prévues #}
+        {% if product %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>{{ product.name }}</h4>
+                    <p>Couleur : {{ product.color }} | Référence : {{ product.reference }}</p>
+
+                    <form method="post">
+                        <input type="hidden" name="reference" value="{{ product.reference }}">
+                        <label class="form-label">Sélectionnez une taille reçue :</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for size in sizes %}
+                                <button type="submit" name="size" value="{{ size }}" class="btn btn-outline-success">
+                                    {{ size }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% elseif reference %}
+            <div class="alert alert-danger">Produit introuvable pour la référence : {{ reference }}</div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{{ path('user_dashboard') }}" class="btn btn-link">⬅ Retour au tableau de bord</a>
+        </div>
+    </div>
+{% endblock %}
