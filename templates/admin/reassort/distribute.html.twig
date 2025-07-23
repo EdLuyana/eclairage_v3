@@ -3,37 +3,48 @@
 {% block title %}Répartition des produits{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">📦 Répartir les tailles du produit</h1>
+    <h1 class="mb-4">📦 Répartition des produits par magasin</h1>
 
     <div class="card p-4 shadow-sm mb-4">
-        <h5 class="mb-3">Produit : {{ product.name }} ({{ product.reference }})</h5>
+        <form method="post" action="{{ path('admin_reassort_review') }}">
 
-        <form method="post" action="{{ path('admin_reassort_confirm') }}">
-            <input type="hidden" name="reference" value="{{ product.reference }}">
+            {% for item in products %}
+                {% set product = item.product %}
+                {% set sizes = item.sizes %}
 
-            {% for size, qty in sizes %}
-                {% set qty = qty|default(0)|int %}
-                {% if qty > 0 %}
-                    <div class="mb-4 border rounded p-3">
-                        <h6 class="mb-3">Taille {{ size }} — Quantité à répartir : <strong>{{ qty }}</strong></h6>
-                        <div class="row g-2">
-                            {% for location in locations %}
-                                <div class="col-6 col-md-3">
-                                    <label class="form-label">{{ location.name }}</label>
-                                    <input type="number"
-                                           name="distributions[{{ size }}][{{ location.id }}]"
-                                           class="form-control"
-                                           min="0"
-                                           value="0"
-                                           max="{{ qty }}">
-                                </div>
-                            {% endfor %}
+                <input type="hidden" name="reference[]" value="{{ product.reference }}">
+                <h5 class="mb-3 mt-4 text-primary">🛍 {{ product.name }} — Réf : {{ product.reference }}</h5>
+
+                {% for size, qty in sizes %}
+                    {% set qty = qty|default(0) %}
+                    {% if qty > 0 %}
+                        <div class="mb-4 border rounded p-3">
+                            <h6 class="mb-3">Taille <strong>{{ size }}</strong> — Quantité à répartir : <strong>{{ qty }}</strong></h6>
+                            <input type="hidden" name="sizes[{{ product.reference }}][{{ size }}]" value="{{ qty }}">
+
+                            <div class="row g-2">
+                                {% for location in locations %}
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label">{{ location.name }}</label>
+                                        <input type="number"
+                                               name="distributions[{{ product.reference }}][{{ size }}][{{ location.id }}]"
+                                               class="form-control"
+                                               min="0"
+                                               max="{{ qty }}"
+                                               value="0">
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
 
-            <button class="btn btn-success mt-3">✅ Valider le réassort</button>
+            <div class="text-end mt-4">
+                <button type="submit" class="btn btn-success btn-lg">
+                    ✅ Valider le réassort
+                </button>
+            </div>
         </form>
     </div>
 {% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation du réassort{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">✅ Confirmation du réassort</h1>
+
+    <form method="post" action="{{ path('admin_reassort_confirm') }}">
+        {% set total = 0 %}
+
+        {% for product in products %}
+            <div class="card p-4 shadow-sm mb-5">
+                <h5 class="mb-3">📦 {{ product.name }} — Réf : {{ product.reference }}</h5>
+
+                {% set hasContent = false %}
+
+                {% for size, locationMap in distributions[product.reference]|default({}) %}
+                    {% set sizeTotal = 0 %}
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Taille {{ size }}</h6>
+                        <ul class="list-group">
+                            {% for locationId, qty in locationMap %}
+                                {% set qty = qty|default(0)|round %}
+                                {% set location = locations[locationId]|default(null) %}
+                                {% if qty > 0 and location %}
+                                    {% set hasContent = true %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>{{ location.name }}</span>
+                                        <span class="badge bg-primary rounded-pill">{{ qty }}</span>
+                                    </li>
+                                    <input type="hidden" name="distributions[{{ product.reference }}][{{ size }}][{{ location.id }}]" value="{{ qty }}">
+                                    {% set sizeTotal = sizeTotal + qty %}
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        {% if sizeTotal > 0 %}
+                            <div class="mt-2 text-end text-muted small">Total taille {{ size }} : {{ sizeTotal }}</div>
+                            {% set total = total + sizeTotal %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {% if not hasContent %}
+                    <div class="text-danger">Aucune répartition pour ce produit.</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="alert alert-info mt-4">
+            <strong>Total général à répartir :</strong> {{ total }} article{{ total > 1 ? 's' : '' }}
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ path('admin_reassort_batch') }}" class="btn btn-secondary">
+                ⬅️ Retour
+            </a>
+            <button type="submit" class="btn btn-success">
+                ✅ Confirmer et enregistrer le réassort
+            </button>
+        </div>
+    </form>
+{% endblock %}

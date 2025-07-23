@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250623033911 extends AbstractMigration
+final class Version20250721154924 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,13 +21,13 @@ final class Version20250623033911 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE stock_movement ADD user_id INT DEFAULT NULL
+            CREATE TABLE product_size (product_id INT NOT NULL, size_id INT NOT NULL, INDEX IDX_7A2806CB4584665A (product_id), INDEX IDX_7A2806CB498DA827 (size_id), PRIMARY KEY(product_id, size_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE stock_movement ADD CONSTRAINT FK_BB1BC1B5A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)
+            ALTER TABLE product_size ADD CONSTRAINT FK_7A2806CB4584665A FOREIGN KEY (product_id) REFERENCES product (id) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE INDEX IDX_BB1BC1B5A76ED395 ON stock_movement (user_id)
+            ALTER TABLE product_size ADD CONSTRAINT FK_7A2806CB498DA827 FOREIGN KEY (size_id) REFERENCES size (id) ON DELETE CASCADE
         SQL);
     }
 
@@ -35,13 +35,13 @@ final class Version20250623033911 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE stock_movement DROP FOREIGN KEY FK_BB1BC1B5A76ED395
+            ALTER TABLE product_size DROP FOREIGN KEY FK_7A2806CB4584665A
         SQL);
         $this->addSql(<<<'SQL'
-            DROP INDEX IDX_BB1BC1B5A76ED395 ON stock_movement
+            ALTER TABLE product_size DROP FOREIGN KEY FK_7A2806CB498DA827
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE stock_movement DROP user_id
+            DROP TABLE product_size
         SQL);
     }
 }

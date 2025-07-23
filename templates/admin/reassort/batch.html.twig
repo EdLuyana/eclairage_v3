@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réassort en lot{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">📦 Réassort de plusieurs produits</h1>
+
+    <div class="mb-4">
+        <a href="{{ path('admin_reassort_start') }}" class="btn btn-outline-primary me-2">
+            🔄 Réassort d’un seul produit
+        </a>
+        <a href="{{ path('admin_reassort_batch') }}" class="btn btn-primary disabled">
+            📦 Réassort en lot (actif)
+        </a>
+    </div>
+
+    <div class="card p-4 shadow-sm mb-4">
+        <h5>Ajouter une référence</h5>
+        <form id="add-product-form" class="d-flex gap-2 w-100" autocomplete="off">
+            <div class="flex-grow-1">
+                <input type="text" id="reference" class="form-control w-100" placeholder="Ex : Fournisseur_Ete2025_Robe_bleue" autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-success">Ajouter</button>
+        </form>
+        <div id="add-product-error" class="text-danger mt-2 d-none"></div>
+    </div>
+
+    <form method="post" action="{{ path('admin_reassort_distribute') }}">
+        <hr>
+
+        <!-- 🔹 Tableau tailles US -->
+        <h4>🧥 Produits en tailles US</h4>
+        <div class="table-responsive mb-5">
+            <table class="table table-bordered align-middle" id="table-us">
+                <thead class="table-light">
+                <tr>
+                    <th>Référence</th>
+                    <th>Nom</th>
+                    {% for t in ['S', 'M', 'L', 'XL', 'XXL'] %}
+                        <th class="text-center">{{ t }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- 🔹 Tableau tailles FR -->
+        <h4>👗 Produits en tailles FR</h4>
+        <div class="table-responsive mb-5">
+            <table class="table table-bordered align-middle" id="table-fr">
+                <thead class="table-light">
+                <tr>
+                    <th>Référence</th>
+                    <th>Nom</th>
+                    {% for t in range(32, 52, 2) %}
+                        <th class="text-center">{{ t }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- 🔹 Tableau tailles Unique -->
+        <h4>🎒 Produits à taille unique</h4>
+        <div class="table-responsive mb-5">
+            <table class="table table-bordered align-middle" id="table-unique">
+                <thead class="table-light">
+                <tr>
+                    <th>Référence</th>
+                    <th>Nom</th>
+                    <th class="text-center">U</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+                ✅ Répartir les produits
+            </button>
+        </div>
+    </form>
+
+    <script>
+        window.getSizesUrl = "{{ path('admin_reassort_get_sizes') }}";
+        window.baseUrl = "{{ app.request.getSchemeAndHttpHost() }}";
+        window.autocompleteUrl = "{{ path('admin_reassort_autocomplete') }}";
+    </script>
+{% endblock %}

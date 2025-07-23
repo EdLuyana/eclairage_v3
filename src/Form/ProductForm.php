@@ -5,11 +5,10 @@ namespace App\Form;
 use App\Entity\Category;
 use App\Entity\Product;
 use App\Entity\Season;
+use App\Entity\Size;
 use App\Entity\Supplier;
-use App\Entity\ProductSize;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -46,12 +45,13 @@ class ProductForm extends AbstractType
                 'label' => 'Collection',
             ])
             ->add('sizes', EntityType::class, [
-                'class' => ProductSize::class,
+                'class' => Size::class,
                 'choice_label' => 'value',
                 'label' => 'Tailles disponibles',
                 'multiple' => true,
-                'expanded' => true, // checkbox
+                'expanded' => true,
                 'required' => false,
+                'attr' => ['class' => 'size-checkboxes'],
             ])
         ;
     }

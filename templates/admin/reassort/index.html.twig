@@ -3,19 +3,22 @@
 {% block title %}Réassort{% endblock %}
 
 {% block body %}
+    <a href="{{ path('admin_reassort_batch') }}" class="btn btn-outline-secondary mb-3">
+        📦 Passer au réassort en lot
+    </a>
     <h1 class="mb-4">📦 Réassort produit</h1>
 
     {% for message in app.flashes('danger') %}
         <div class="alert alert-danger">{{ message }}</div>
     {% endfor %}
 
-    <div class="card p-4 shadow-sm mb-4">
+    <div class="card p-4 shadow-sm mb-4 position-relative">
         <form method="get" action="{{ path('admin_reassort_start') }}">
             <label for="reference" class="form-label">Référence produit</label>
-            <div class="input-group">
-                <input type="text" id="reference" name="reference" class="form-control" placeholder="ex : Zara_Ete2025_Robe_bleue" value="{{ reference }}">
-                <button class="btn btn-primary" type="submit">Rechercher</button>
+            <div class="position-relative">
+                <input type="text" id="reference" name="reference" class="form-control" placeholder="ex : Fournisseur_Ete2025_Robe_bleue" value="{{ reference }}" autocomplete="off">
             </div>
+            <button class="btn btn-primary mt-3" type="submit">Rechercher</button>
         </form>
     </div>
 
@@ -32,12 +35,15 @@
             <hr>
 
             <h5 class="mt-4">Quantité par taille à redistribuer</h5>
-            <form method="post" action="#">
+            <form method="post" action="{{ path('admin_reassort_distribute') }}">
+                {# 🔴 Champ indispensable pour passer la référence au contrôleur suivant #}
+                <input type="hidden" name="reference" value="{{ product.reference }}">
+
                 <div class="row g-2">
-                    {% for size in ['XS', 'S', 'M', 'L', 'XL', '36', '38', '40', '42'] %}
+                    {% for size in productSizes %}
                         <div class="col-4 col-md-2">
-                            <label class="form-label">{{ size }}</label>
-                            <input type="number" name="sizes[{{ size }}]" min="0" class="form-control" value="0">
+                            <label class="form-label">{{ size.value }}</label>
+                            <input type="number" name="sizes[{{ size.value }}]" min="0" class="form-control" value="0">
                         </div>
                     {% endfor %}
                 </div>
@@ -45,4 +51,8 @@
             </form>
         </div>
     {% endif %}
+
+    <script>
+        window.autocompleteUrl = "{{ path('admin_reassort_autocomplete') }}";
+    </script>
 {% endblock %}

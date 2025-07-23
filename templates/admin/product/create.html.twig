@@ -2,6 +2,25 @@
 
 {% block title %}Création produit & éléments liés{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .size-group {
+            margin-bottom: 1rem;
+        }
+        .size-group legend {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .checkbox-inline {
+            display: inline-block;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <h1 class="mb-4">Créer un produit ou un élément lié</h1>
 
@@ -14,7 +33,54 @@
             <div class="card shadow-sm p-4 mb-4">
                 <h5 class="mb-3">🧾 Formulaire produit</h5>
                 {{ form_start(form) }}
-                {{ form_widget(form) }}
+
+                {{ form_row(form.name) }}
+                {{ form_row(form.color) }}
+                {{ form_row(form.price) }}
+                {{ form_row(form.category) }}
+                {{ form_row(form.supplier) }}
+                {{ form_row(form.season) }}
+
+                <div class="mb-3">
+                    <label class="form-label">Tailles disponibles</label>
+
+                    <fieldset class="size-group">
+                        <legend>Taille alphabétique (XS à XXL)</legend>
+                        {% for choice in form.sizes %}
+                            {% if choice.vars.label in ['XS','S','M','L','XL','XXL'] %}
+                                <div class="form-check form-check-inline checkbox-inline">
+                                    {{ form_widget(choice) }}
+                                    {{ form_label(choice) }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </fieldset>
+
+                    <fieldset class="size-group">
+                        <legend>Taille numérique (32 à 52)</legend>
+                        {% for choice in form.sizes %}
+                            {% if choice.vars.label matches '/^3[2-9]$|^4[0-9]$|^50$|^52$/' %}
+                                <div class="form-check form-check-inline checkbox-inline">
+                                    {{ form_widget(choice) }}
+                                    {{ form_label(choice) }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </fieldset>
+
+                    <fieldset class="size-group">
+                        <legend>Taille unique</legend>
+                        {% for choice in form.sizes %}
+                            {% if choice.vars.label == 'U' %}
+                                <div class="form-check form-check-inline checkbox-inline">
+                                    {{ form_widget(choice) }}
+                                    {{ form_label(choice) }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                </div>
+
                 <button class="btn btn-primary mt-3">Enregistrer le produit</button>
                 {{ form_end(form) }}
             </div>
