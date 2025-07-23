@@ -19,19 +19,20 @@ class StockMovementRepository extends ServiceEntityRepository
     public function countSalesLast30DaysIndexed(): array
     {
         $qb = $this->createQueryBuilder('m')
-            ->select('IDENTITY(s.product) as productId, s.size as size, SUM(m.quantity) as total')
-            ->join('m.stock', 's')
+            ->select('p.reference AS reference', 'l.name AS location', 'SUM(m.quantity) AS total')
+            ->join('m.product', 'p')
+            ->join('m.location', 'l')
             ->where('m.type = :type')
             ->andWhere('m.createdAt >= :startDate')
-            ->setParameter('type', 'sale')
+            ->setParameter('type', 'SALE') // veille à bien mettre en majuscule ici
             ->setParameter('startDate', new \DateTimeImmutable('-30 days'))
-            ->groupBy('productId, s.size');
+            ->groupBy('p.reference, l.name');
 
         $result = $qb->getQuery()->getResult();
 
         $sales = [];
         foreach ($result as $row) {
-            $sales[$row['productId']][$row['size']] = (int) $row['total'];
+            $sales[$row['reference']][$row['location']] = abs((int) $row['total']); // abs pour rendre le chiffre positif
         }
 
         return $sales;

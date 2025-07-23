@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Retour produit{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h2 class="text-center mb-4">Retour produit en stock</h2>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('danger') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
+        <form method="post" class="mb-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="input-group input-group-lg mb-2">
+                        <input type="text"
+                               name="reference"
+                               id="reference"
+                               class="form-control"
+                               placeholder="Scanner ou saisir la référence"
+                               required
+                        >
+                        <input type="text"
+                               name="size"
+                               id="size"
+                               class="form-control"
+                               placeholder="Taille (ex: M, 38...)"
+                        >
+                        <button class="btn btn-primary" type="submit">Valider</button>
+                    </div>
+                    <small class="form-text text-muted">
+                        Vous pouvez scanner <strong>référence-taille</strong> ou saisir la référence manuellement, puis choisir la taille.
+                    </small>
+                </div>
+            </div>
+        </form>
+
+        <div class="text-center">
+            <a href="{{ path('user_dashboard') }}" class="btn btn-secondary mt-3">Retour au tableau de bord</a>
+        </div>
+    </div>
+{% endblock %}

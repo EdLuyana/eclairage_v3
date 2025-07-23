@@ -131,15 +131,17 @@ class AdminReassortController extends AbstractController
                         $location = $locationRepository->find($locationId);
                         if (!$location) continue;
 
-                        $line = new ReassortLine();
-                        $line->setProduct($product);
-                        $line->setLocation($location);
-                        $line->setSize($size);
-                        $line->setQuantity($qty);
-                        $line->setStatus('TO_INTEGRATE');
-                        $line->setCreatedAt(new \DateTimeImmutable());
+                        for ($i = 0; $i < $qty; $i++) {
+                            $line = new ReassortLine();
+                            $line->setProduct($product);
+                            $line->setSize($size);
+                            $line->setLocation($location);
+                            $line->setQuantity(1);
+                            $line->setStatus('TO_INTEGRATE');
+                            $line->setCreatedAt(new \DateTimeImmutable());
 
-                        $em->persist($line);
+                            $em->persist($line);
+                        }
                     }
                 }
             }

@@ -32,7 +32,7 @@ class StockMovement
     private int $quantity;
 
     #[ORM\Column(length: 20)]
-    private string $type; // ex : 'addition', 'removal', 'return', 'sale'
+    private string $type;
 
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
@@ -42,6 +42,9 @@ class StockMovement
 
     #[ORM\ManyToOne]
     private ?User $user = null;
+
+    #[ORM\Column(type: 'float')]
+    private float $price;
 
     public function __construct()
     {
@@ -143,6 +146,17 @@ class StockMovement
     public function setUser(?User $user): static
     {
         $this->user = $user;
+        return $this;
+    }
+
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): static
+    {
+        $this->price = $price;
         return $this;
     }
 }

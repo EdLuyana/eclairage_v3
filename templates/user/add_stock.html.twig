@@ -6,45 +6,66 @@
     <div class="container py-4">
         <h2 class="text-center mb-4">Ajouter un produit au stock</h2>
 
-        {# Message flash de confirmation #}
         {% for message in app.flashes('success') %}
             <div class="alert alert-success">{{ message }}</div>
         {% endfor %}
 
-        {# Formulaire de saisie / scan de la référence produit #}
-        <form method="get" class="mb-4">
-            <div class="input-group">
-                <input type="text" name="reference" value="{{ reference }}" class="form-control form-control-lg" placeholder="Scanner ou saisir la référence produit" required>
-                <button class="btn btn-primary btn-lg" type="submit">Rechercher</button>
+        <form method="get" class="mb-4" id="reference-form">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="input-group">
+                        <input type="text" id="reference" name="reference" value="{{ reference }}" class="form-control form-control-lg" placeholder="Scanner ou saisir la référence produit" required>
+                        <button class="btn btn-primary btn-lg" type="submit">Rechercher</button>
+                    </div>
+                </div>
             </div>
         </form>
 
-        {# Affichage du produit et des tailles prévues #}
-        {% if product %}
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h4>{{ product.name }}</h4>
-                    <p>Couleur : {{ product.color }} | Référence : {{ product.reference }}</p>
+        <div id="product-result">
+            {% if product %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4>{{ product.name }}</h4>
+                        <p>Couleur : {{ product.color }} | Référence : {{ product.reference }}</p>
 
-                    <form method="post">
-                        <input type="hidden" name="reference" value="{{ product.reference }}">
-                        <label class="form-label">Sélectionnez une taille reçue :</label>
-                        <div class="d-flex flex-wrap gap-2">
-                            {% for size in sizes %}
-                                <button type="submit" name="size" value="{{ size }}" class="btn btn-outline-success">
-                                    {{ size }}
-                                </button>
+                        <p class="mb-2">Cliquez sur les tailles reçues :</p>
+                        <div class="d-flex flex-wrap gap-2 mb-3" id="size-buttons">
+                            {% for size, qty in sizes %}
+                                {% for i in 1..qty %}
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-success size-button"
+                                        data-stock-size="{{ size }}"
+                                        data-stock-reference="{{ product.reference }}">
+                                        {{ size }}
+                                    </button>
+                                {% endfor %}
                             {% endfor %}
                         </div>
-                    </form>
+
+                        <div class="text-center mt-3">
+                            <button id="validate-stock-button" class="btn btn-success btn-lg w-100" disabled>
+                                ✅ Valider les ajouts au stock
+                            </button>
+                        </div>
+
+                        <div class="bg-light p-3 rounded">
+                            <strong>Produits intégrés :</strong>
+                            <span id="size-summary" class="ms-2 text-success fw-bold fs-5"></span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        {% elseif reference %}
-            <div class="alert alert-danger">Produit introuvable pour la référence : {{ reference }}</div>
-        {% endif %}
+            {% elseif reference %}
+                <div class="alert alert-danger">Produit introuvable pour la référence : {{ reference }}</div>
+            {% endif %}
+        </div>
 
         <div class="text-center mt-4">
             <a href="{{ path('user_dashboard') }}" class="btn btn-link">⬅ Retour au tableau de bord</a>
         </div>
     </div>
+
+    <script>
+        window.autocompleteUrl = "{{ path('user_add_stock_autocomplete') }}";
+    </script>
 {% endblock %}

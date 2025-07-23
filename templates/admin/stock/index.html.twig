@@ -1,60 +1,62 @@
+{# templates/admin/stock/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Consultation des stocks{% endblock %}
 
 {% block body %}
-<h1 class="mb-4">📦 Consultation des stocks</h1>
+    <div class="container py-4">
+        <h2 class="mb-4 text-center">
+            🏦 Consultation des stocks
+        </h2>
 
-<form method="get" class="mb-4 row g-2">
-    <div class="col-md-4">
-        <label for="location" class="form-label">Magasin</label>
-        <select name="location" id="location" class="form-select">
-            <option value="">Tous les magasins</option>
-            {% for loc in locations %}
-            <option value="{{ loc.id }}" {{ locationId == loc.id ? 'selected' }}>
-            {{ loc.name }}
-            </option>
+        <form method="get" class="row mb-4">
+            <div class="col-md-6">
+                <label for="location">Magasin</label>
+                <select name="location" id="location" class="form-select">
+                    <option value="">Tous les magasins</option>
+                    {% for loc in locations %}
+                        <option value="{{ loc.id }}" {% if locationId == loc.id %}selected{% endif %}>{{ loc.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button class="btn btn-primary w-100">🔍 Filtrer</button>
+            </div>
+        </form>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Référence</th>
+                <th>Magasin</th>
+                <th>Tailles</th>
+                <th>Ventes (30j)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in grouped %}
+                <tr>
+                    <td>{{ row.reference }}</td>
+                    <td>{{ row.location }}</td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for item in row.sizes %}
+                                {% set size = item.size %}
+                                {% set qty = item.quantity %}
+                                <span class="badge
+    {% if qty == 0 %}bg-danger
+    {% elseif qty == 1 %}bg-warning text-dark
+    {% else %}bg-success
+    {% endif %}">
+    {{ size }} ({{ qty }})
+</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>{{ row.sales }}</td>
+                </tr>
             {% endfor %}
-        </select>
+            </tbody>
+        </table>
     </div>
-    <div class="col-md-2 align-self-end">
-        <button class="btn btn-primary w-100">🔎 Filtrer</button>
-    </div>
-</form>
-
-<table class="table table-bordered align-middle">
-    <thead class="table-light">
-    <tr>
-        <th>Référence</th>
-        <th>Magasin</th>
-        <th>Taille</th>
-        <th>Stock</th>
-        <th>Ventes (30j)</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for stock in stocks %}
-    {% set salesCount = sales[stock.product.id][stock.size]|default(0) %}
-    <tr>
-        <td>{{ stock.product.reference }}</td>
-        <td>{{ stock.location.name }}</td>
-        <td>{{ stock.size }}</td>
-        <td>
-            {% if stock.quantity == 0 %}
-            <span class="badge bg-danger">0</span>
-            {% elseif stock.quantity == 1 %}
-            <span class="badge bg-warning text-dark">1</span>
-            {% else %}
-            <span class="badge bg-success">{{ stock.quantity }}</span>
-            {% endif %}
-        </td>
-        <td>{{ salesCount }}</td>
-    </tr>
-    {% else %}
-    <tr>
-        <td colspan="5" class="text-center text-muted">Aucun stock trouvé.</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
 {% endblock %}

@@ -27,17 +27,53 @@ class UserSellController extends AbstractController
         EntityManagerInterface $em
     ): Response {
         $location = $locationService->getCurrentLocation();
-        $reference = $request->query->get('reference');
+        $referenceParam = $request->query->get('reference');
         $product = null;
         $availableSizes = [];
 
-        if ($reference) {
-            $product = $productRepository->findOneBy(['reference' => $reference]);
+        // 🟢 Détection scan code-barres au format REF-Taille
+        if ($referenceParam && str_contains($referenceParam, '-')) {
+            [$refScanned, $sizeScanned] = explode('-', $referenceParam, 2);
+            $product = $productRepository->findOneBy(['reference' => $refScanned]);
+
             if ($product) {
-                $availableSizes = $stockRepository->findAvailableSizesForProductAndLocation($product, $location);
+                $stock = $stockRepository->findOneBy([
+                    'product' => $product,
+                    'size' => $sizeScanned,
+                    'location' => $location
+                ]);
+
+                if ($stock && $stock->getQuantity() > 0) {
+                    $cart = $session->get('cart', []);
+                    $cart[] = [
+                        'reference' => $refScanned,
+                        'size' => $sizeScanned,
+                        'price' => $product->getPrice(),
+                    ];
+                    $session->set('cart', $cart);
+
+                    return $this->redirectToRoute('user_sell');
+                } else {
+                    $this->addFlash('danger', 'Produit ou taille non disponible en stock.');
+                    return $this->redirectToRoute('user_sell');
+                }
+            } else {
+                $this->addFlash('danger', 'Référence scannée invalide.');
+                return $this->redirectToRoute('user_sell');
             }
         }
 
+        // 🟢 Saisie manuelle via input
+        if ($referenceParam && !str_contains($referenceParam, '-')) {
+            $product = $productRepository->findOneBy(['reference' => $referenceParam]);
+            if ($product) {
+                $availableSizes = $stockRepository->findAvailableSizesForProductAndLocation($product, $location);
+            } else {
+                $this->addFlash('danger', 'Produit introuvable.');
+            }
+        }
+
+        // 🟢 Ajout manuel au panier (via bouton taille)
         if ($request->isMethod('POST') && $request->request->get('action') === 'add_to_cart') {
             $cart = $session->get('cart', []);
             $cart[] = [
@@ -49,6 +85,7 @@ class UserSellController extends AbstractController
             return $this->redirectToRoute('user_sell');
         }
 
+        // 🔄 Appliquer / retirer une réduction
         if ($request->query->get('discount') === '1') {
             $session->set('discount', true);
             return $this->redirectToRoute('user_sell');
@@ -59,6 +96,14 @@ class UserSellController extends AbstractController
             return $this->redirectToRoute('user_sell');
         }
 
+        // 🧹 Vider le panier
+        if ($request->query->get('clear') === '1') {
+            $session->remove('cart');
+            $session->remove('discount');
+            return $this->redirectToRoute('user_sell');
+        }
+
+        // ✅ Validation finale de la vente
         if ($request->request->get('action') === 'validate_sale') {
             $cart = $session->get('cart', []);
             foreach ($cart as $item) {
@@ -70,16 +115,18 @@ class UserSellController extends AbstractController
                 ]);
 
                 if ($stock && $stock->getQuantity() > 0) {
-                    $stock->decreaseQuantity(1);
+                    $stock->decrementQuantity(1);
 
                     $movement = new StockMovement();
                     $movement->setProduct($product);
                     $movement->setSize($item['size']);
                     $movement->setLocation($location);
+                    $movement->setStock($stock);
                     $movement->setQuantity(-1);
                     $movement->setUser($this->getUser());
-                    $movement->setType('vente');
-                    $movement->setCreatedAt(new \DateTimeImmutable());
+                    $movement->setType('SALE');
+                    $movement->setPrice($item['price']);
+                    $movement->getCreatedAt(new \DateTimeImmutable());
 
                     $em->persist($movement);
                 }
@@ -89,19 +136,40 @@ class UserSellController extends AbstractController
             $session->remove('cart');
             $session->remove('discount');
 
-            $this->addFlash('success', 'Vente enregistrée et panier vidé.');
+            $this->addFlash('success', '✅ Vente enregistrée et panier vidé.');
             return $this->redirectToRoute('user_sell');
         }
 
+        // Affichage classique
         $cart = $session->get('cart', []);
         $discountApplied = $session->get('discount', false);
 
         return $this->render('user/sell.html.twig', [
             'product' => $product,
-            'reference' => $reference,
+            'reference' => $referenceParam,
             'sizes' => $availableSizes,
             'cart' => $cart,
             'discountApplied' => $discountApplied,
         ]);
     }
+
+    #[Route('/user/sell/autocomplete', name: 'user_sell_autocomplete')]
+    public function autocomplete(
+        Request $request,
+        StockRepository $stockRepository,
+        CurrentLocationService $locationService
+    ): Response {
+        $term = $request->query->get('query');
+        $location = $locationService->getCurrentLocation();
+
+        if (!$term || strlen($term) < 2) {
+            return $this->json([]);
+        }
+
+        // 🔎 On récupère les références disponibles dans CE magasin
+        $results = $stockRepository->findReferencesInLocationByTerm($term, $location);
+
+        return $this->json($results);
+    }
+
 }

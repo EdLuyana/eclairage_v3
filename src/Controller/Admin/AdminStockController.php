@@ -32,11 +32,41 @@ class AdminStockController extends AbstractController
         // Préparer un tableau pour compter les ventes sur 30 jours
         $sales = $movementRepository->countSalesLast30DaysIndexed();
 
+        $grouped = [];
+
+        foreach ($stocks as $stock) {
+            $reference = $stock->getProduct()->getReference();
+            $locationName = $stock->getLocation()->getName();
+            $key = $reference . '_' . $locationName;
+
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'reference' => $reference,
+                    'location' => $locationName, // 👈 ici on garde une chaîne simple
+                    'sizes' => [],
+                    'sales' => $sales[$reference][$locationName] ?? 0,
+                ];
+            }
+
+            $grouped[$key]['sizes'][] = [
+                'size' => $stock->getSize(),
+                'quantity' => $stock->getQuantity(),
+            ];
+        }
+
+//        return $this->render('admin/stock/index.html.twig', [
+//            'stocks' => $stocks,
+//            'locations' => $locationRepository->findAll(),
+//            'selectedLocationId' => $selectedLocationId,
+//            'grouped' => $grouped,
+//        ]);
+
         return $this->render('admin/stock/index.html.twig', [
             'stocks' => $stocks,
             'sales' => $sales,
             'locations' => $locations,
             'locationId' => $locationId,
-        ]);
+            'grouped' => $grouped,
+         ]);
     }
 }

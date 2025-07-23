@@ -8,9 +8,11 @@
 
         {# Formulaire de scan/saisie #}
         <form method="get" class="mb-4">
-            <div class="input-group">
-                <input type="text" name="reference" value="{{ reference }}" class="form-control form-control-lg" placeholder="Scanner ou saisir la référence" required>
-                <button class="btn btn-primary btn-lg" type="submit">Rechercher</button>
+            <div class="col-md-8 col-lg-6 mx-auto">
+                <div class="input-group">
+                    <input type="text" id="reference" name="reference" value="{{ reference }}" class="form-control form-control-lg" placeholder="Scanner ou saisir la référence produit" required>
+                    <button class="btn btn-primary btn-lg" type="submit">Rechercher</button>
+                </div>
             </div>
         </form>
 
@@ -22,48 +24,29 @@
                 </div>
             </div>
 
-            {% if sizes is not empty and stockMap is not empty %}
-                <div class="table-responsive">
-                    <table class="table table-bordered text-center align-middle">
-                        <thead>
-                        <tr>
-                            <th>Taille</th>
-                            {% for locationName, _ in stockMap %}
-                                {% set missingCount = 0 %}
-                                {% for size in sizes %}
-                                    {% if stockMap[locationName][size]|default(0) < 1 %}
-                                        {% set missingCount = missingCount + 1 %}
-                                    {% endif %}
+            {% if stockMap is not empty %}
+                {% for locationName, sizes in stockMap %}
+                    <div class="card mb-3">
+                        <div class="card-header fw-bold text-uppercase">
+                            🏪 {{ locationName }}
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for size, qty in sizes %}
+                                    <span class="badge fs-6 py-2 px-3
+                                    {% if qty == 0 %} bg-danger
+                                    {% elseif qty == 1 %} bg-warning text-dark
+                                    {% else %} bg-success
+                                    {% endif %}">
+                                    {{ size }} ({{ qty }})
+                                </span>
                                 {% endfor %}
-
-                                {% if missingCount == 0 %}
-                                    {% set color = 'success' %}
-                                {% elseif missingCount == 1 %}
-                                    {% set color = 'warning' %}
-                                {% else %}
-                                    {% set color = 'danger' %}
-                                {% endif %}
-
-                                <th class="bg-{{ color }}">{{ locationName }}</th>
-                            {% endfor %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for size in sizes %}
-                            <tr>
-                                <th>{{ size }}</th>
-                                {% for locationName, stocks in stockMap %}
-                                    <td>
-                                        {{ stocks[size]|default(0) }}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             {% else %}
-                <div class="alert alert-warning">Aucune information de stock trouvée pour ce produit.</div>
+                <div class="alert alert-warning">Aucun stock trouvé pour ce produit.</div>
             {% endif %}
         {% elseif reference %}
             <div class="alert alert-danger">Référence introuvable.</div>
@@ -73,4 +56,8 @@
             <a href="{{ path('user_dashboard') }}" class="btn btn-link">⬅ Retour au tableau de bord</a>
         </div>
     </div>
+
+    <script>
+        window.autocompleteUrl = "{{ path('user_check_stock_autocomplete') }}";
+    </script>
 {% endblock %}

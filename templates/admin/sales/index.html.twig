@@ -71,7 +71,7 @@
         <tbody>
         {% set total = 0 %}
         {% for movement in movements %}
-            {% set montant = movement.quantity * movement.price %}
+            {% set montant = movement.price * (movement.quantity * -1) %}
             {% set total = total + montant %}
             <tr>
                 <td>{{ movement.createdAt|date('d/m/Y H:i') }}</td>

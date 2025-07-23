@@ -58,6 +58,10 @@
             font-size: 12px;
             font-weight: bold;
             background: #f5f5f5;
+            grid-column: span 4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 {% endblock %}
@@ -65,9 +69,12 @@
 {% block body %}
     <h1 class="mb-4">🖨️ Étiquettes produits à imprimer</h1>
 
-    <div class="no-print mb-4">
+    <div class="no-print mb-4 d-flex gap-2">
+        <a href="{{ path('admin_labels_print') }}" class="btn btn-success">
+            📄 Générer le PDF des étiquettes
+        </a>
         <button onclick="window.print()" class="btn btn-primary">
-            🖨 Imprimer les étiquettes
+            🖨 Imprimer cette vue HTML
         </button>
     </div>
 
